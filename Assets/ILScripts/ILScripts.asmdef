@@ -1,0 +1,10 @@
+{
+    "name": "ILScripts",
+    "references": [
+        "MainScripts"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
