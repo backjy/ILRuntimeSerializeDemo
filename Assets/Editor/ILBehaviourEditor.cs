@@ -116,10 +116,12 @@ public class ILBehaviourEditor : Editor
                         pro.InsertArrayElementAtIndex(index);
                         sub = pro.GetArrayElementAtIndex(index);
                     }
+                    var tp = sub.FindPropertyRelative("t");
                     var mp = sub.FindPropertyRelative("m");
                     mp.stringValue = field.Name;
                     var vs = sub.FindPropertyRelative("vs");
                     var vo = sub.FindPropertyRelative("vo");
+                    tp.stringValue = field.FieldType.Name;
                     switch (field.FieldType.Name)
                     {
                         case "Int32":
@@ -176,6 +178,7 @@ public class ILBehaviourEditor : Editor
                                 color = EditorGUILayout.ColorField(field.Name, color);
                                 vs.stringValue = "#" + ColorUtility.ToHtmlStringRGBA(color);
                                 vo.objectReferenceValue = null;
+                                tp.stringValue = "String";
                                 break;
                             }
                         case "Vector2":
@@ -223,17 +226,34 @@ public class ILBehaviourEditor : Editor
                                 {
                                     //var test = field.FieldType.GetCustomAttributes(typeof(SerializableAttribute), false).FirstOrDefault();
                                     string fname = string.Format("{0}({1})", field.Name, field.FieldType.Name);
-                                    EditorGUILayout.ObjectField(vo, typeof(ILBehaviourBridage), new GUIContent(fname));
-                                    if (vo.objectReferenceValue && (vo.objectReferenceValue as ILBehaviourBridage).fullType != field.FieldType.FullName)
+                                    var obj = EditorGUILayout.ObjectField(fname, vo.objectReferenceValue, typeof(UnityEngine.Object), true);
+                                    //EditorGUILayout.ObjectField(vo, typeof(ILBehaviourBridage), new GUIContent(fname));
+                                    if (obj is GameObject)
+                                    {
+                                        vo.objectReferenceValue = (obj as GameObject).GetILComponent(field.FieldType.FullName) as ILBehaviourBridage;
+                                    }
+                                    else if (obj is ILBehaviourBridage)
+                                    {
+                                        if(field.FieldType.FullName != (vo.objectReferenceValue as ILBehaviourBridage).fullType)
+                                        {
+                                            vo.objectReferenceValue = null;
+                                        }
+                                        else
+                                        {
+                                            vo.objectReferenceValue = obj;
+                                        }
+                                    } 
+                                    else
                                     {
                                         vo.objectReferenceValue = null;
                                     }
                                 }
                                 else
                                 {
-                                    var test = field.FieldType.GetCustomAttributes(typeof(SerializableAttribute), false).FirstOrDefault();
+                                    //var test = field.FieldType.GetCustomAttributes(typeof(SerializableAttribute), false).FirstOrDefault();
                                     EditorGUILayout.ObjectField(vo, field.FieldType, new GUIContent(field.Name));
                                 }
+                                tp.stringValue = field.FieldType.FullName;
                                 break;
                             }
                     }

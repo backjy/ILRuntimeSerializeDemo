@@ -123,6 +123,9 @@ MonoBehaviour:
   - m: nsScript
     vs: 
     vo: {fileID: 0}
+  - m: prefab
+    vs: 
+    vo: {fileID: 0}
 --- !u!222 &222072607022027866
 CanvasRenderer:
   m_ObjectHideFlags: 1

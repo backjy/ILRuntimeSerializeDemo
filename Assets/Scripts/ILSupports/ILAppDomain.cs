@@ -12,12 +12,7 @@ public class ILAppDomain {
         if(_instance == null)
         {
             _instance = new AppDomain();
-#if USE_PDB
-            _instance.LoadAssemblyFileAndPDB(ILScriptPath, ILScriptPDBPath);
-            _instance.DebugService.StartDebugService(11010);
-#else
             _instance.LoadAssemblyFile(ILScriptPath);
-#endif
             InitializeDomain();
         }
         return _instance;

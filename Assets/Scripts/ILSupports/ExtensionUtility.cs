@@ -17,35 +17,27 @@ public static class ExtensionUtility
         return null;
     }
 
-    public static System.Object GetILComponent(this GameObject go, string type)
+    public static UnityEngine.Object GetILComponent(this GameObject go, string type)
     {
         ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
         foreach( ILBehaviourBridage beh in components)
         {
-            if( beh.fullType == type && beh.GetILInstance() != null)
+            if( beh.fullType == type)
             {
-#if USE_HOT_FIX
-                return beh.GetILInstance().CLRInstance;
-#else
-                return beh.GetILInstance();
-#endif
+                return beh;
             }
         }
         return null;
     }
 
-    public static System.Object GetILComponent(this Component go, string type)
+    public static UnityEngine.Object GetILComponent(this Component go, string type)
     {
         ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
         foreach (ILBehaviourBridage beh in components)
         {
-            if (beh.fullType == type && beh.GetILInstance() != null)
+            if (beh.fullType == type)
             {
-#if USE_HOT_FIX
-                return beh.GetILInstance().CLRInstance;
-#else
-                return beh.GetILInstance();
-#endif
+                return beh;
             }
         }
         return null;

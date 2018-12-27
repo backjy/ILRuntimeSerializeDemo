@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoadTest : MonoBehaviour {
+public class LoadTest : ILComponent {
     
     public RectTransform parent;
-    public GameObject prefab;
     // Use this for initialization
+    [SerializeField]
+    public TestSpace2.NS1 ns1;
     void Start () {
-        if ( parent && prefab)
-        {
-            GameObject.Instantiate(prefab, parent);
-        }
+        Debug.Log("Load Test");
 	}
 	
 	// Update is called once per frame

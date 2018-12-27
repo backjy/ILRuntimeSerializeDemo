@@ -17,6 +17,7 @@ public class ILBehaviourBridage : MonoBehaviour
     [Serializable]
     public struct RefField
     {
+        public string t;
         public string m; // 成员名字
         public string vs;// 成员string 值 
         public UnityEngine.Object vo; // 成员Unity.object 值
@@ -69,9 +70,8 @@ public class ILBehaviourBridage : MonoBehaviour
                 int idx = 0;
                 if (ilType.FieldMapping.TryGetValue(fields[i].m, out idx))
                 {
-                    IType fieldType = ilType.FieldTypes[idx];
                     ConvertTo cv;
-                    if (convertMap.TryGetValue(fieldType.Name, out cv))
+                    if (convertMap.TryGetValue(fields[i].t, out cv))
                     {
                         ilInstance[idx] = cv.Invoke(ref fields[i]);
                     }

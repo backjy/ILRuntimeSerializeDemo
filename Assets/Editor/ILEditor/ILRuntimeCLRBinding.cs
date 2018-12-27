@@ -32,7 +32,6 @@ public class ILRuntimeCLRBinding
         types.Add(typeof(List<ILRuntime.Runtime.Intepreter.ILTypeInstance>));
 
         ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(types, exportPath);
-
     }
 
     [MenuItem("ILRuntime/Generate CLR Binding Code by Analysis")]

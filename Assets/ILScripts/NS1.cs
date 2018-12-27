@@ -37,6 +37,8 @@ namespace TestSpace2
         [UnityEngine.SerializeField]
         public NS1 nsScript;
 
+        [SerializeField]
+        public GameObject prefab;
         Text text;
         
         // Use this for initialization
@@ -45,7 +47,9 @@ namespace TestSpace2
             Debug.Log(nsScript);
             Debug.Log(nsScript == this);
             UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
-            
+
+            GameObject.Instantiate(prefab, transform.parent);
+
 
             var obj = new GameObject(_bridage.ToString());
             obj.transform.parent = transform;
