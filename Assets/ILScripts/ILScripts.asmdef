@@ -4,7 +4,9 @@
         "MainScripts"
     ],
     "includePlatforms": [
-        "Editor"
+        "Android",
+        "Editor",
+        "iOS"
     ],
     "excludePlatforms": []
 }

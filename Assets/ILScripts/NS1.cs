@@ -19,7 +19,7 @@ namespace TestSpace2
     [ILScriptAttribute]
     public class NS1 : ILComponent
     {
-
+        static int counter = 0;
         public int testValue;
         public int testValue1;
         public string testValue2;
@@ -38,24 +38,23 @@ namespace TestSpace2
         public NS1 nsScript;
 
         Text text;
-
-        public override void Awake(ILBehaviourBridage bridage)
-        {
-            base.Awake(bridage);
-            UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
-            Debug.Log(bridage);
-            text = this.gameObject.AddComponent<Text>();
-            var obj = new GameObject(bridage.ToString());
-            obj.transform.parent = transform;
-            text = obj.AddComponent<Text>();
-            testValue = 0;
-            //text.text = bridage.ToString();
-        }
-
+        
         // Use this for initialization
-        void Start()
+        public void Start()
         {
-            _bridage.StartCoroutine(cortunction());
+            Debug.Log(nsScript);
+            Debug.Log(nsScript == this);
+            UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
+            
+
+            var obj = new GameObject(_bridage.ToString());
+            obj.transform.parent = transform;
+            text = obj.GetComponent<Text>();
+            Debug.Log("text:", text);
+            if( text == null) text = obj.AddComponent<Text>();
+            testValue = 0;
+            StartCoroutine(cortunction());
+            Debug.Log("counter:" + (++counter));
         }
 
         // Update is called once per frame

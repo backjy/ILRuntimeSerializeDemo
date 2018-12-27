@@ -5,13 +5,19 @@ using ILRuntime.Runtime.Enviorment;
 
 public class ILAppDomain {
     public static string ILScriptPath = "Library/ScriptAssemblies/ILScripts.dll";
+    public static string ILScriptPDBPath = "Temp/UnityVS_bin/Debug/ILScripts.pdb";
     static AppDomain _instance;
     static public AppDomain GetInstance()
     {
         if(_instance == null)
         {
             _instance = new AppDomain();
+#if USE_PDB
+            _instance.LoadAssemblyFileAndPDB(ILScriptPath, ILScriptPDBPath);
+            _instance.DebugService.StartDebugService(11010);
+#else
             _instance.LoadAssemblyFile(ILScriptPath);
+#endif
             InitializeDomain();
         }
         return _instance;
@@ -21,6 +27,5 @@ public class ILAppDomain {
     {
         ILRuntime.Runtime.Generated.CLRBindings.Initialize(_instance);
         _instance.RegisterCrossBindingAdaptor(new CoroutineAdapter());
-        _instance.RegisterCrossBindingAdaptor(new MonoBehaviourAdapter());
     }
 }

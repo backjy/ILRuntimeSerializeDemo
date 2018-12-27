@@ -17,27 +17,14 @@ public class ILBehaviourEditor : Editor
 {
     static Type TryGetType( string className)
     {
-        var currentAssembly = Assembly.LoadFile(ILAppDomain.ILScriptPath);
-        var curType = currentAssembly.GetType(className);
-        if (curType == null)
+        foreach (var type in (from assmbly in AppDomain.CurrentDomain.GetAssemblies()
+                              from type in assmbly.GetTypes()
+                              where (type.FullName == className)
+                              select type))
         {
-            var referencedAssemblies = currentAssembly.GetReferencedAssemblies();
-            foreach (var assemblyName in referencedAssemblies)
-            {
-                // Load the referenced assembly
-                var assembly = Assembly.Load(assemblyName);
-                if (assembly != null)
-                {
-                    // See if that assembly defines the named type
-                    curType = assembly.GetType(className);
-                    if (curType != null)
-                    {
-                        break;
-                    }
-                }
-            }
+            return type;
         }
-        return curType;
+        return null;
     }
     
     static string pattern = @".*?\snamespace\s[\S\s]*?(?={)";

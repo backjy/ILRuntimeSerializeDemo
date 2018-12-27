@@ -1,9 +1,56 @@
-﻿using System.Collections;
+﻿using ILRuntime.CLR.TypeSystem;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class ExtensionUtility
 {
+    public static Component AddILComponent(this GameObject go, string component)
+    {
+        if (string.IsNullOrEmpty(component) == false)
+        {
+            var com = go.AddComponent<ILBehaviourBridage>();
+            com.fullType = component;
+            com.Initialize();
+            return com;
+        }
+        return null;
+    }
+
+    public static System.Object GetILComponent(this GameObject go, string type)
+    {
+        ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
+        foreach( ILBehaviourBridage beh in components)
+        {
+            if( beh.fullType == type && beh.GetILInstance() != null)
+            {
+#if USE_HOT_FIX
+                return beh.GetILInstance().CLRInstance;
+#else
+                return beh.GetILInstance();
+#endif
+            }
+        }
+        return null;
+    }
+
+    public static System.Object GetILComponent(this Component go, string type)
+    {
+        ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
+        foreach (ILBehaviourBridage beh in components)
+        {
+            if (beh.fullType == type && beh.GetILInstance() != null)
+            {
+#if USE_HOT_FIX
+                return beh.GetILInstance().CLRInstance;
+#else
+                return beh.GetILInstance();
+#endif
+            }
+        }
+        return null;
+    }
+    
     public static GameObject GetChild(this GameObject go, string path)
     {
         Transform child = go.transform.Find(path);

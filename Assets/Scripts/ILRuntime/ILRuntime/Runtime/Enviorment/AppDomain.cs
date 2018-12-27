@@ -230,11 +230,19 @@ namespace ILRuntime.Runtime.Enviorment
                     {
                         if (isPDB)
                         {
+#if USE_PDB
                             LoadAssemblyPDB(fs, pdbfs);
+#else
+                            UnityEngine.Debug.Log("Please Define USE_PDB");
+#endif
                         }
                         else
                         {
+#if USE_MDB
                             LoadAssemblyMDB(fs, pdbfs);
+#else
+                            UnityEngine.Debug.Log("Please Define USE_MDB");
+#endif
                         }
                     }
                 }
@@ -286,12 +294,12 @@ namespace ILRuntime.Runtime.Enviorment
 #endif
 
 #if USE_MDB
-        /// <summary>
-        /// 加载Assembly 文件和MDB文件，两者都从指定的路径
-        /// </summary>
-        /// <param name="assemblyFilePath">Assembly 文件路径</param>
-        /// <param name="symbolFilePath">symbol文件路径</param>
-        public void LoadAssemblyFileAndMDB(string assemblyFilePath, string symbolFilePath)
+                            /// <summary>
+                            /// 加载Assembly 文件和MDB文件，两者都从指定的路径
+                            /// </summary>
+                            /// <param name="assemblyFilePath">Assembly 文件路径</param>
+                            /// <param name="symbolFilePath">symbol文件路径</param>
+                            public void LoadAssemblyFileAndMDB(string assemblyFilePath, string symbolFilePath)
         {
             FileInfo assfile = new FileInfo(assemblyFilePath);
             FileInfo pdbfile = new FileInfo(symbolFilePath);
