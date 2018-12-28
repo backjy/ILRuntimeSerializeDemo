@@ -178,7 +178,6 @@ public class ILBehaviourEditor : Editor
                                 color = EditorGUILayout.ColorField(field.Name, color);
                                 vs.stringValue = "#" + ColorUtility.ToHtmlStringRGBA(color);
                                 vo.objectReferenceValue = null;
-                                tp.stringValue = "String";
                                 break;
                             }
                         case "Vector2":
@@ -234,7 +233,7 @@ public class ILBehaviourEditor : Editor
                                         foreach( var com in components)
                                         {
 #if USE_HOT_FIX
-                                            if( com.ILInstance.Type.FullName == field.FieldType.Name)
+                                            if( com.fullType == field.FieldType.Name)
                                             {
                                                 vo.objectReferenceValue = com; break;
                                             }

@@ -24,6 +24,7 @@ namespace TestSpace2
         public int testValue1;
         public string testValue2;
         public Color tColor;
+        [UnityEngine.SerializeField]
         public Color32 tColor2;
 
         public Vector2 v2;
@@ -48,7 +49,7 @@ namespace TestSpace2
             Debug.Log(nsScript);
             Debug.Log(nsScript == this);
             UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
-            Debug.Log("Start....");
+            Debug.Log("Start...." + (prefab == this.gameObject));
             if( !hasInstance)
                 GameObject.Instantiate(prefab, transform.parent);
             hasInstance = true;

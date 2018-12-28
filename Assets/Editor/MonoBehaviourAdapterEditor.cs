@@ -66,7 +66,9 @@ public class MonoBehaviourAdapterEditor : UnityEditor.UI.GraphicEditor
                     }
                     else if (cType == typeof(Color32))
                     {
-                        instance[i.Value] = (Color32)EditorGUILayout.ColorField(name, (Color32)instance[i.Value]);
+                        Color32 color32 =  (Color32)instance[i.Value];
+                        color32 = EditorGUILayout.ColorField(name, color32);
+                        instance[i.Value] = color32;
                     }
                     else if (cType == typeof(Vector2))
                     {

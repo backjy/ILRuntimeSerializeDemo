@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 224799428033895820}
   - component: {fileID: 114754785392046036}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Objjjjj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,10 +41,14 @@ MonoBehaviour:
   scriptFile: {fileID: 11500000, guid: 0602d79fa63aa6b48b335dbbd22f8dd3, type: 3}
   fullType: TestSpace2.NS1
   fields:
+  - t: Color32
+    m: tColor2
+    vs: '#FF4F4FFF'
+    vo: {fileID: 0}
   - t: TestSpace2.NS1
     m: nsScript
     vs: 
-    vo: {fileID: 114754785392046036}
+    vo: {fileID: 1211209826523342}
   - t: UnityEngine.GameObject
     m: prefab
     vs: 

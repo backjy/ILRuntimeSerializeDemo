@@ -77,7 +77,7 @@ public class ILBehaviourBridage : MonoBehaviour
                     ConvertTo cv;
                     if (convertMap.TryGetValue(fields[i].t, out cv))
                     {
-                        ILInstance[idx] = cv.Invoke(ref fields[i]);
+                        ILInstance[idx] = cv(ref fields[i]);
                     }
                     else
                     {
