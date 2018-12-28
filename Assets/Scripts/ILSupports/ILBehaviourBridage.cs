@@ -107,7 +107,8 @@ public class ILBehaviourBridage : MonoBehaviour
     {
         if( source.vo is ILBehaviourBridage)
         {
-            return (source.vo as ILBehaviourBridage).adaptor.ILInstance;
+            var ilinstance = (source.vo as ILBehaviourBridage).adaptor.ILInstance;
+            return ilinstance!=null? ilinstance.CLRInstance: null;
         }
         return source.vo;
     }

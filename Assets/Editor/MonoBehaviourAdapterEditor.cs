@@ -34,8 +34,18 @@ public class MonoBehaviourAdapterEditor : UnityEditor.UI.GraphicEditor
                     {
                         instance[i.Value] = EditorGUILayout.FloatField(name, (float)instance[i.Value]);
                     }
-                    else
-                        throw new System.NotImplementedException();//剩下的大家自己补吧
+                    else if( cType == typeof(int))
+                    {
+                        instance[i.Value] = EditorGUILayout.IntField(name, (int)instance[i.Value]);
+                    }
+                    else if (cType == typeof(long))
+                    {
+                        instance[i.Value] = EditorGUILayout.LongField(name, (long)instance[i.Value]);
+                    }
+                    else if (cType == typeof(double))
+                    {
+                        instance[i.Value] = EditorGUILayout.DoubleField(name, (double)instance[i.Value]);
+                    }
                 }
                 else
                 {
@@ -45,6 +55,34 @@ public class MonoBehaviourAdapterEditor : UnityEditor.UI.GraphicEditor
                         //处理Unity类型
                         var res = EditorGUILayout.ObjectField(name, obj as UnityEngine.Object, cType, true);
                         instance[i.Value] = res;
+                    }
+                    else if (cType == typeof(string))
+                    {
+                        instance[i.Value] = EditorGUILayout.TextField(name, (string)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Color))
+                    {
+                        instance[i.Value] = EditorGUILayout.ColorField(name, (Color)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Color32))
+                    {
+                        instance[i.Value] = (Color32)EditorGUILayout.ColorField(name, (Color32)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Vector2))
+                    {
+                        instance[i.Value] = EditorGUILayout.Vector2Field(name, (Vector2)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Vector3))
+                    {
+                        instance[i.Value] = EditorGUILayout.Vector3Field(name, (Vector3)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Vector4))
+                    {
+                        instance[i.Value] = EditorGUILayout.Vector4Field(name, (Vector4)instance[i.Value]);
+                    }
+                    else if (cType == typeof(Rect))
+                    {
+                        instance[i.Value] = EditorGUILayout.RectField(name, (Rect)instance[i.Value]);
                     }
                     else
                     {
