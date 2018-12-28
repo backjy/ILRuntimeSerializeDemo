@@ -48,7 +48,7 @@ MonoBehaviour:
   - t: UnityEngine.GameObject
     m: prefab
     vs: 
-    vo: {fileID: 1340533393587216, guid: f2d04fef41743f84e9e748f7db85808a, type: 2}
+    vo: {fileID: 1211209826523342}
 --- !u!224 &224799428033895820
 RectTransform:
   m_ObjectHideFlags: 1

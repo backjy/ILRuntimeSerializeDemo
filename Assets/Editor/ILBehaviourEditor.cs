@@ -230,7 +230,21 @@ public class ILBehaviourEditor : Editor
                                     //EditorGUILayout.ObjectField(vo, typeof(ILBehaviourBridage), new GUIContent(fname));
                                     if (obj is GameObject)
                                     {
-                                        vo.objectReferenceValue = (obj as GameObject).GetILComponent(field.FieldType.FullName) as ILBehaviourBridage;
+                                        var components = (obj as GameObject).GetComponents<ILBehaviourBridage>();
+                                        foreach( var com in components)
+                                        {
+#if USE_HOT_FIX
+                                            if( com.ILInstance.Type.FullName == field.FieldType.Name)
+                                            {
+                                                vo.objectReferenceValue = com; break;
+                                            }
+#else
+                                            if (com.ILInstance.GetType().FullName == field.FieldType.Name)
+                                            {
+                                                vo.objectReferenceValue = com; break;
+                                            }
+#endif
+                                        }
                                     }
                                     else if (obj is ILBehaviourBridage)
                                     {

@@ -1,4 +1,4 @@
-﻿
+﻿//#define USE_HOT_FIX 
 using ILRuntime.CLR.Method;
 using ILRuntime.CLR.TypeSystem;
 using ILRuntime.Runtime.Intepreter;
@@ -33,36 +33,40 @@ public class ILBehaviourBridage : MonoBehaviour
     private bool hasInitilized = false;
 #if USE_HOT_FIX
     // instance
-    protected ILTypeInstance ilInstance;
-    protected IMethod startMethod;
-    protected IMethod destoryMethod;
-    protected IMethod enableMethod;
-    protected IMethod disableMethod;
-    
+    protected MonoBehaviourAdapter.Adaptor adaptor;
+
+    public ILTypeInstance ILInstance
+    {
+        get { return adaptor!= null? adaptor.ILInstance: null; }
+    }
+
     public void Initialize()
     {
         IType ilType;
-        if (string.IsNullOrEmpty(fullType) == false && ILAppDomain.GetInstance().LoadedTypes.TryGetValue(fullType, out ilType))
+        if (hasInitilized == true || string.IsNullOrEmpty(fullType)) return;
+        if (ILAppDomain.Instance.LoadedTypes.TryGetValue(fullType, out ilType))
         {
-            ilInstance = (ilType as ILType).Instantiate();
-            startMethod = ilType.GetMethod("Start", 0);
-            destoryMethod = ilType.GetMethod("OnDestroy", 0);
-            enableMethod = ilType.GetMethod("OnEnable", 0);
-            disableMethod = ilType.GetMethod("OnDisable", 0);
-            var awakeMethod = ilType.GetMethod("Awake", 1);
+            //热更DLL内的类型比较麻烦。首先我们得自己手动创建实例; 手动创建实例是因为默认方式会new MonoBehaviour，这在Unity里不允许
+            var ilInstance = new ILTypeInstance(ilType as ILType, false);
+            //接下来创建Adapter实例
+            adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
+            //unity创建的实例并没有热更DLL里面的实例，所以需要手动赋值
+            adaptor.ILInstance = ilInstance; adaptor.AppDomain = ILAppDomain.Instance;
+            //这个实例默认创建的CLRInstance不是通过AddComponent出来的有效实例，所以得手动替换
+            ilInstance.CLRInstance = adaptor;
+            // 序列化属性
+            SerializeFields();
+            adaptor.Awake();
             hasInitilized = true;
-            // 把自己传过去
-            // SerializeFields(); start 的时候调用 避免ILruntime 中的instance 为null
-            if (awakeMethod != null)
-                ILAppDomain.GetInstance().Invoke(awakeMethod, ilInstance, new object[] { this });
+            //交给ILRuntime的实例应该为ILInstance
         }
     }
     
     public void SerializeFields()
     {
-        if(ilInstance != null)
+        if(ILInstance != null)
         {
-            ILType ilType = ilInstance.Type;
+            ILType ilType = ILInstance.Type;
             // 设置属性
             int fieldlen = fields.Length;
             for (int i = 0; i < fieldlen; i++)
@@ -73,97 +77,65 @@ public class ILBehaviourBridage : MonoBehaviour
                     ConvertTo cv;
                     if (convertMap.TryGetValue(fields[i].t, out cv))
                     {
-                        ilInstance[idx] = cv.Invoke(ref fields[i]);
+                        ILInstance[idx] = cv.Invoke(ref fields[i]);
                     }
                     else
                     {
-                        ilInstance[idx] = ConvertObject(ref fields[i]);
+                        ILInstance[idx] = ConvertObject(ref fields[i]);
                     }
                 }
             }
         }
     }
 
-    public ILTypeInstance GetILInstance()
-    {
-        return ilInstance;
-    }
-
     void Awake()
     {
-        ilInstance = null;
         Initialize();
+        SerializeFields();
     }
 
     // Use this for initialization
     void Start ()
     {
-        if (!hasInitilized) Initialize();
-        SerializeFields();
-        if (startMethod != null)
-            ILAppDomain.GetInstance().Invoke(startMethod, ilInstance, null);
+        if (!hasInitilized)
+        {
+            Initialize();
+        }
     }
 
-    void OnDestroy()
-    {
-        if (destoryMethod != null)
-            ILAppDomain.GetInstance().Invoke(destoryMethod, ilInstance, null);
-    }
-
-    void OnEnable()
-    {
-        if (enableMethod != null)
-            ILAppDomain.GetInstance().Invoke(enableMethod, ilInstance, null);
-    }
-
-    void OnDisable()
-    {
-        if (disableMethod != null)
-            ILAppDomain.GetInstance().Invoke(disableMethod, ilInstance, null);
-    }
-        
-    
     static public System.Object ConvertObject(ref ILBehaviourBridage.RefField source)
     {
         if( source.vo is ILBehaviourBridage)
         {
-            var ilinstance = (source.vo as ILBehaviourBridage).ilInstance;
-            if (ilinstance != null) return ilinstance.CLRInstance;
-            return null;
+            return (source.vo as ILBehaviourBridage).adaptor.ILInstance;
         }
         return source.vo;
     }
 #else
 
     // instance
-    protected System.Object ilInstance;
+    protected UnityEngine.Component ilInstance;
     protected MethodInfo startMethod;
     protected MethodInfo destoryMethod;
     protected MethodInfo enableMethod;
     protected MethodInfo disableMethod;
+    
+    public UnityEngine.Component ILInstance
+    {
+        get { return ilInstance; }
+    }
 
     public void Initialize()
     {
+        if (string.IsNullOrEmpty(fullType) || hasInitilized == true) return;
         foreach (var type in (from assmbly in AppDomain.CurrentDomain.GetAssemblies()
                               from type in assmbly.GetTypes()
                               where (type.FullName == fullType)
                               select type))
         {
-            Debug.Log("Test");
-            ilInstance = Activator.CreateInstance(type);
-            if( ilInstance != null)
-            {
-                startMethod     = type.GetMethod("Start");
-                destoryMethod   = type.GetMethod("OnDestroy");
-                enableMethod    = type.GetMethod("OnEnable");
-                disableMethod   = type.GetMethod("OnDisable");
-                var awakeMethod = type.GetMethod("Awake");
-                hasInitilized = true;
-                // 把自己传过去
-                // SerializeFields(); start 的时候调用 避免ILruntime 中的instance 为null
-                if (awakeMethod != null)
-                    awakeMethod.Invoke(ilInstance, new object[] { this });
-            }
+            ilInstance = gameObject.AddComponent(type);
+            SerializeFields();
+            hasInitilized = true;
         }
     }
 
@@ -192,15 +164,9 @@ public class ILBehaviourBridage : MonoBehaviour
             }
         }
     }
-
-    public System.Object GetILInstance()
-    {
-        return ilInstance;
-    }
-
+    
     void Awake()
     {
-        ilInstance = null;
         Initialize();
     }
 
@@ -208,37 +174,14 @@ public class ILBehaviourBridage : MonoBehaviour
     void Start()
     {
         if (!hasInitilized) Initialize();
-        SerializeFields();
-        if (startMethod != null)
-            startMethod.Invoke(ilInstance, null);
     }
-
-    void OnDestroy()
-    {
-        if (destoryMethod != null)
-            destoryMethod.Invoke(ilInstance, null);
-    }
-
-    void OnEnable()
-    {
-        if (enableMethod != null)
-            enableMethod.Invoke(ilInstance, null);
-    }
-
-    void OnDisable()
-    {
-        if (disableMethod != null)
-            disableMethod.Invoke(ilInstance, null);
-    }
-
 
     static public System.Object ConvertObject(ref ILBehaviourBridage.RefField source)
     {
         if (source.vo is ILBehaviourBridage)
         {
             var ilinstance = (source.vo as ILBehaviourBridage).ilInstance;
-            if (ilinstance != null) return ilinstance;
-            return null;
+            return ilinstance;
         }
         return source.vo;
     }

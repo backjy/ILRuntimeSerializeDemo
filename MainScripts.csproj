@@ -257,6 +257,9 @@
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
@@ -541,7 +544,6 @@
     <Compile Include="Assets\Scripts\ILSupports\BeiaviourMessage\Trigger2DMessage.cs" />
     <Compile Include="Assets\Scripts\ILSupports\BeiaviourMessage\TriggerMessage.cs" />
     <Compile Include="Assets\Scripts\ILSupports\BeiaviourMessage\UpdateMessage.cs" />
-    <Compile Include="Assets\Scripts\ILSupports\Class1.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ExtensionUtility.cs" />
     <Compile Include="Assets\Scripts\ILSupports\Generated\CLRBindings.cs" />
     <Compile Include="Assets\Scripts\ILSupports\Generated\System_Array_Binding.cs" />
@@ -562,6 +564,7 @@
     <Compile Include="Assets\Scripts\ILSupports\Generated\UnityEngine_Vector3_Binding.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILAppDomain.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILBehaviourBridage.cs" />
+    <Compile Include="Assets\Scripts\ILSupports\ILRedirections.cs" />
     <Compile Include="Assets\Scripts\TestBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,7 @@ namespace TestSpace
 namespace TestSpace2
 {
     [ILScriptAttribute]
-    public class NS1 : ILComponent
+    public class NS1 : MonoBehaviour
     {
         static int counter = 0;
         public int testValue;
@@ -41,17 +41,20 @@ namespace TestSpace2
         public GameObject prefab;
         Text text;
         
+        static bool hasInstance = false;
         // Use this for initialization
         public void Start()
         {
             Debug.Log(nsScript);
             Debug.Log(nsScript == this);
             UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
+            Debug.Log("Start....");
+            if( !hasInstance)
+                GameObject.Instantiate(prefab, transform.parent);
+            hasInstance = true;
 
-            GameObject.Instantiate(prefab, transform.parent);
 
-
-            var obj = new GameObject(_bridage.ToString());
+            var obj = new GameObject(ToString());
             obj.transform.parent = transform;
             text = obj.GetComponent<Text>();
             Debug.Log("text:", text);

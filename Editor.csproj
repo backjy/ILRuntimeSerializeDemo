@@ -257,6 +257,9 @@
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2017.3.0f3/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
@@ -298,6 +301,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\ILBehaviourEditor.cs" />
     <Compile Include="Assets\Editor\ILEditor\ILRuntimeCLRBinding.cs" />
+    <Compile Include="Assets\Editor\MonoBehaviourAdapterEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Editor\Editor.asmdef" />

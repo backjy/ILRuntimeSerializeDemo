@@ -5,44 +5,6 @@ using UnityEngine;
 
 public static class ExtensionUtility
 {
-    public static Component AddILComponent(this GameObject go, string component)
-    {
-        if (string.IsNullOrEmpty(component) == false)
-        {
-            var com = go.AddComponent<ILBehaviourBridage>();
-            com.fullType = component;
-            com.Initialize();
-            return com;
-        }
-        return null;
-    }
-
-    public static UnityEngine.Object GetILComponent(this GameObject go, string type)
-    {
-        ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
-        foreach( ILBehaviourBridage beh in components)
-        {
-            if( beh.fullType == type)
-            {
-                return beh;
-            }
-        }
-        return null;
-    }
-
-    public static UnityEngine.Object GetILComponent(this Component go, string type)
-    {
-        ILBehaviourBridage[] components = go.GetComponents<ILBehaviourBridage>();
-        foreach (ILBehaviourBridage beh in components)
-        {
-            if (beh.fullType == type)
-            {
-                return beh;
-            }
-        }
-        return null;
-    }
-    
     public static GameObject GetChild(this GameObject go, string path)
     {
         Transform child = go.transform.Find(path);
