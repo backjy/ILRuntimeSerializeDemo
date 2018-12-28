@@ -48,7 +48,7 @@ MonoBehaviour:
   - t: TestSpace2.NS1
     m: nsScript
     vs: 
-    vo: {fileID: 1211209826523342}
+    vo: {fileID: 114754785392046036}
   - t: UnityEngine.GameObject
     m: prefab
     vs: 

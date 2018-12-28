@@ -232,17 +232,10 @@ public class ILBehaviourEditor : Editor
                                         var components = (obj as GameObject).GetComponents<ILBehaviourBridage>();
                                         foreach( var com in components)
                                         {
-#if USE_HOT_FIX
-                                            if( com.fullType == field.FieldType.Name)
+                                            if (com.fullType == field.FieldType.FullName)
                                             {
                                                 vo.objectReferenceValue = com; break;
                                             }
-#else
-                                            if (com.ILInstance.GetType().FullName == field.FieldType.Name)
-                                            {
-                                                vo.objectReferenceValue = com; break;
-                                            }
-#endif
                                         }
                                     }
                                     else if (obj is ILBehaviourBridage)

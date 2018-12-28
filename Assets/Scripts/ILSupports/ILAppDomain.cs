@@ -31,4 +31,6 @@ public class ILAppDomain {
         _instance.RegisterCrossBindingAdaptor(new CoroutineAdapter());
         _instance.RegisterCrossBindingAdaptor(new MonoBehaviourAdapter());
     }
+
+    static public bool UsingILMode = true;
 }

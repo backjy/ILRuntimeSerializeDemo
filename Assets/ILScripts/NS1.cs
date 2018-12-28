@@ -42,7 +42,6 @@ namespace TestSpace2
         public GameObject prefab;
         Text text;
         
-        static bool hasInstance = false;
         // Use this for initialization
         public void Start()
         {
@@ -50,11 +49,15 @@ namespace TestSpace2
             Debug.Log(nsScript == this);
             UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
             Debug.Log("Start...." + (prefab == this.gameObject));
-            if( !hasInstance)
+
+            if (counter == 0)
                 GameObject.Instantiate(prefab, transform.parent);
-            hasInstance = true;
-
-
+            else if (counter == 1)
+                GameObject.Instantiate(this, transform.parent);
+            else if (counter == 2)
+            {
+                GameObject.Instantiate(this.gameObject, transform.parent);
+            }
             var obj = new GameObject(ToString());
             obj.transform.parent = transform;
             text = obj.GetComponent<Text>();
@@ -68,7 +71,8 @@ namespace TestSpace2
         // Update is called once per frame
         void Update()
         {
-            text.text = "update" + (testValue ++);
+            if( text!= null)
+                text.text = "update" + (testValue ++);
         }
 
         IEnumerator cortunction()

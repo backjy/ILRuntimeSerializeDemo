@@ -51,18 +51,13 @@ class ILRedirections
             }
             else
             {
-                //热更DLL内的类型比较麻烦。首先我们得自己手动创建实例; 手动创建实例是因为默认方式会new MonoBehaviour，这在Unity里不允许
-                var ilInstance = new ILTypeInstance(type as ILType, false);
-                //接下来创建Adapter实例
                 var monoAdaptor = instance.AddComponent<MonoBehaviourAdapter.Adaptor>();
-                //unity创建的实例并没有热更DLL里面的实例，所以需要手动赋值
-                monoAdaptor.ILInstance = ilInstance; monoAdaptor.AppDomain = __domain;
-                //这个实例默认创建的CLRInstance不是通过AddComponent出来的有效实例，所以得手动替换
-                ilInstance.CLRInstance = monoAdaptor;
-                //交给ILRuntime的实例应该为ILInstance
-                res = monoAdaptor.ILInstance;
+                // 初始化Ilruntim 脚本
+                monoAdaptor.Initialize(type as ILType);
                 //因为Unity调用这个方法时还没准备好所以这里补调一次
                 monoAdaptor.Awake();
+                // 返回参数
+                res = monoAdaptor.ILInstance;
             }
 
             return ILIntepreter.PushObject(ptr, __mStack, res);

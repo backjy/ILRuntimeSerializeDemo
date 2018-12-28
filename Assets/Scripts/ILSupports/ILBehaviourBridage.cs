@@ -29,44 +29,56 @@ public class ILBehaviourBridage : MonoBehaviour
     public string fullType;
     // 不建议使用过多的字段属性用于序列化, 需要序列化的字段请添加 [System.SerializeField]
     public RefField[] fields;
-    // 对 HOT_Fixed 和正常模式采用不同的执行逻辑
-    private bool hasInitilized = false;
-#if USE_HOT_FIX
-    // instance
-    protected MonoBehaviourAdapter.Adaptor adaptor;
+    // runtime instance 自动控制不能在编辑器中设置
+    public UnityEngine.Component instance;
 
-    public ILTypeInstance ILInstance
+    void Awake()
     {
-        get { return adaptor!= null? adaptor.ILInstance: null; }
+        if (ILAppDomain.UsingILMode)
+            ILRuntimeInitialize();
+        else
+            NattiveInitialize();
     }
 
-    public void Initialize()
+    // Use this for initialization
+    void Start()
     {
-        IType ilType;
-        if (hasInitilized == true || string.IsNullOrEmpty(fullType)) return;
-        if (ILAppDomain.Instance.LoadedTypes.TryGetValue(fullType, out ilType))
+        if (instance == null)
         {
-            //热更DLL内的类型比较麻烦。首先我们得自己手动创建实例; 手动创建实例是因为默认方式会new MonoBehaviour，这在Unity里不允许
-            var ilInstance = new ILTypeInstance(ilType as ILType, false);
-            //接下来创建Adapter实例
-            adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
-            //unity创建的实例并没有热更DLL里面的实例，所以需要手动赋值
-            adaptor.ILInstance = ilInstance; adaptor.AppDomain = ILAppDomain.Instance;
-            //这个实例默认创建的CLRInstance不是通过AddComponent出来的有效实例，所以得手动替换
-            ilInstance.CLRInstance = adaptor;
-            // 序列化属性
-            SerializeFields();
-            adaptor.Awake();
-            hasInitilized = true;
-            //交给ILRuntime的实例应该为ILInstance
+            if (ILAppDomain.UsingILMode)
+                ILRuntimeInitialize();
+            else
+                NattiveInitialize();
         }
     }
-    
-    public void SerializeFields()
+
+    // IL runtime 
+    public void ILRuntimeInitialize()
     {
-        if(ILInstance != null)
+        if ( string.IsNullOrEmpty(fullType) ) return;
+        // 如果不是MonoBehaviourAdaptor  
+        if(instance == null || !(instance is MonoBehaviourAdapter.Adaptor))
         {
-            ILType ilType = ILInstance.Type;
+            // 就要删了重新处理
+            if (instance != null) Destroy(instance);
+            // 创建新的MonoBehaviourAdapter
+            MonoBehaviourAdapter.Adaptor adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
+            adaptor.Initialize(fullType);
+            // 赋值到instance 上
+            instance = adaptor;
+            // 序列化属性
+            ILRuntimeSerializeFields();
+            // 补充awake 调用
+            adaptor.Awake();
+        }
+    }
+
+    public void ILRuntimeSerializeFields()
+    {
+        ILTypeInstance ilInstance = (instance as MonoBehaviourAdapter.Adaptor).ILInstance;
+        if (ilInstance != null)
+        {
+            ILType ilType = ilInstance.Type;
             // 设置属性
             int fieldlen = fields.Length;
             for (int i = 0; i < fieldlen; i++)
@@ -77,116 +89,56 @@ public class ILBehaviourBridage : MonoBehaviour
                     ConvertTo cv;
                     if (convertMap.TryGetValue(fields[i].t, out cv))
                     {
-                        ILInstance[idx] = cv(ref fields[i]);
+                        ilInstance[idx] = cv(ref fields[i]);
                     }
                     else
                     {
-                        ILInstance[idx] = ConvertObject(ref fields[i]);
+                        ilInstance[idx] = ILConvertObject(ref fields[i]);
                     }
                 }
             }
         }
     }
 
-    void Awake()
+    // Native C# code
+    public void NattiveInitialize()
     {
-        Initialize();
-        SerializeFields();
-    }
-
-    // Use this for initialization
-    void Start ()
-    {
-        if (!hasInitilized)
-        {
-            Initialize();
-        }
-    }
-
-    static public System.Object ConvertObject(ref ILBehaviourBridage.RefField source)
-    {
-        if( source.vo is ILBehaviourBridage)
-        {
-            var ilinstance = (source.vo as ILBehaviourBridage).adaptor.ILInstance;
-            return ilinstance!=null? ilinstance.CLRInstance: null;
-        }
-        return source.vo;
-    }
-#else
-
-    // instance
-    protected UnityEngine.Component ilInstance;
-    protected MethodInfo startMethod;
-    protected MethodInfo destoryMethod;
-    protected MethodInfo enableMethod;
-    protected MethodInfo disableMethod;
-    
-    public UnityEngine.Component ILInstance
-    {
-        get { return ilInstance; }
-    }
-
-    public void Initialize()
-    {
-        if (string.IsNullOrEmpty(fullType) || hasInitilized == true) return;
+        if (string.IsNullOrEmpty(fullType) || instance != null) return;
         foreach (var type in (from assmbly in AppDomain.CurrentDomain.GetAssemblies()
                               from type in assmbly.GetTypes()
                               where (type.FullName == fullType)
                               select type))
         {
-            ilInstance = gameObject.AddComponent(type);
-            SerializeFields();
-            hasInitilized = true;
+            instance = gameObject.AddComponent(type);
+            NativeSerializeFields();
         }
     }
 
-    public void SerializeFields()
+    public void NativeSerializeFields()
     {
-        if (ilInstance != null)
+        if (instance != null)
         {
-            Type ilType = ilInstance.GetType();
+            Type ilType = instance.GetType();
             // 设置属性
             int fieldlen = fields.Length;
             for (int i = 0; i < fieldlen; i++)
             {
                 FieldInfo info = ilType.GetField(fields[i].m);
-                if( info != null)
+                if (info != null)
                 {
                     ConvertTo cv;
                     if (convertMap.TryGetValue(info.FieldType.Name, out cv))
                     {
-                        info.SetValue(ilInstance, cv(ref fields[i]));
+                        info.SetValue(instance, cv(ref fields[i]));
                     }
                     else
                     {
-                        info.SetValue(ilInstance, ConvertObject(ref fields[i]));
+                        info.SetValue(instance, NTConvertObject(ref fields[i]));
                     }
                 }
             }
         }
     }
-    
-    void Awake()
-    {
-        Initialize();
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-        if (!hasInitilized) Initialize();
-    }
-
-    static public System.Object ConvertObject(ref ILBehaviourBridage.RefField source)
-    {
-        if (source.vo is ILBehaviourBridage)
-        {
-            var ilinstance = (source.vo as ILBehaviourBridage).ilInstance;
-            return ilinstance;
-        }
-        return source.vo;
-    }
-#endif
 
     static Dictionary<string, ConvertTo> convertMap = new Dictionary<string, ConvertTo> {
         { "Int32", ILBehaviourBridage.ConvertInt32},
@@ -285,5 +237,25 @@ public class ILBehaviourBridage : MonoBehaviour
         Rect value;
         ExtensionUtility.StringToRect(source.vs, out value);
         return value;
+    }
+    
+    static public System.Object ILConvertObject(ref ILBehaviourBridage.RefField source)
+    {
+        if (source.vo is ILBehaviourBridage)
+        {
+            var ilinstance = (((ILBehaviourBridage)source.vo).instance as MonoBehaviourAdapter.Adaptor).ILInstance;
+            return ilinstance != null ? ilinstance.CLRInstance : null;
+        }
+        return source.vo;
+    }
+
+    static public System.Object NTConvertObject(ref ILBehaviourBridage.RefField source)
+    {
+        if (source.vo is ILBehaviourBridage)
+        {
+            var ilinstance = (source.vo as ILBehaviourBridage).instance;
+            return ilinstance;
+        }
+        return source.vo;
     }
 }
