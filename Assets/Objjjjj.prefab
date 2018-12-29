@@ -53,6 +53,7 @@ MonoBehaviour:
     m: prefab
     vs: 
     vo: {fileID: 1211209826523342}
+  instance: {fileID: 0}
 --- !u!224 &224799428033895820
 RectTransform:
   m_ObjectHideFlags: 1

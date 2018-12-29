@@ -565,6 +565,8 @@
     <Compile Include="Assets\Scripts\ILSupports\ILAppDomain.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILBehaviourBridage.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILRedirections.cs" />
+    <Compile Include="Assets\Scripts\NotificationCenter.cs" />
+    <Compile Include="Assets\Scripts\TimeScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Editor\Editor.asmdef" />

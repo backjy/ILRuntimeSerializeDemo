@@ -5,19 +5,19 @@ using UnityEngine;
 
 public static class ExtensionUtility
 {
-    public static GameObject GetChild(this GameObject go, string path)
+    public static GameObject GetChildren(this GameObject go, string path)
     {
         Transform child = go.transform.Find(path);
         return child != null ? child.gameObject : null;
     }
 
-    public static T GetChild<T>(this Component go, string path)
+    public static T GetChildren<T>(this Component go, string path)
     {
         Transform child = go.transform.Find(path);
         return child!= null? child.GetComponent<T>() : default(T);
     }
 
-    public static T GetChild<T>(this GameObject go, string path)
+    public static T GetChildren<T>(this GameObject go, string path)
     {
         Transform child = go.transform.Find(path);
         return child != null ? child.GetComponent<T>() : default(T);

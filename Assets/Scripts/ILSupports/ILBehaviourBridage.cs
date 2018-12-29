@@ -29,7 +29,7 @@ public class ILBehaviourBridage : MonoBehaviour
     public string fullType;
     // 不建议使用过多的字段属性用于序列化, 需要序列化的字段请添加 [System.SerializeField]
     public RefField[] fields;
-    // runtime instance 自动控制不能在编辑器中设置
+    // runtime instance 自动控制不能在编辑器中设置 该instance 会在
     public UnityEngine.Component instance;
 
     void Awake()
