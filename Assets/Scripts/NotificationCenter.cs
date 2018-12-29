@@ -15,7 +15,7 @@ public class ObserverNode
     public System.Action<String, object> callback;
     public bool hasInvoke;
     private WeakReference _observer;
-    public System.Object observer
+    public object observer
     {
         get
         {
@@ -87,8 +87,8 @@ public class NotificationCenter : MonoBehaviour
     Hashtable notifications = new Hashtable();
 
     // AddObserver includes a version where the observer can request to only receive notifications from a specific object.  We haven't implemented that yet, so the sender value is ignored for now.
-    public void AddObserver(String name, System.Object observer, System.Action<String, object> cb) { AddObserver(name, observer, cb, null); }
-    public void AddObserver(String name, System.Object observer, System.Action<String, object> cb, object sender)
+    public void AddObserver(String name, object observer, System.Action<String, object> cb) { AddObserver(name, observer, cb, null); }
+    public void AddObserver(String name, object observer, System.Action<String, object> cb, object sender)
     {
         // If the name isn't good, then throw an error and return.
         if (name == null || name == "") { Debug.Log("Null name specified for notification in AddObserver."); return; }
@@ -121,7 +121,7 @@ public class NotificationCenter : MonoBehaviour
     }
 
     // RemoveObserver removes the observer from the notification list for the specified notification type
-    public void RemoveObserver(System.Object observer, String name)
+    public void RemoveObserver(object observer, String name)
     {
         List<ObserverNode> notifyList = (List<ObserverNode>)notifications[name]; //change from original
         // Assuming that this is a valid notification type, remove the observer from the list.
