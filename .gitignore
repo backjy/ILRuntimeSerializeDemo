@@ -3,3 +3,6 @@ Library/
 UnityPackageManager/
 Temp/
 Assets/Scripts/ILSupports/Generated/
+.vs/
+*.csproj
+*.sln

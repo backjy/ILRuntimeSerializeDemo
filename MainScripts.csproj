@@ -565,7 +565,6 @@
     <Compile Include="Assets\Scripts\ILSupports\ILAppDomain.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILBehaviourBridage.cs" />
     <Compile Include="Assets\Scripts\ILSupports\ILRedirections.cs" />
-    <Compile Include="Assets\Scripts\TestBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Editor\Editor.asmdef" />

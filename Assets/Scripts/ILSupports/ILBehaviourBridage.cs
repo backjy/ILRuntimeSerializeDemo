@@ -63,6 +63,7 @@ public class ILBehaviourBridage : MonoBehaviour
             if (instance != null) Destroy(instance);
             // 创建新的MonoBehaviourAdapter
             MonoBehaviourAdapter.Adaptor adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
+            //  初始化脚本类型
             adaptor.Initialize(fullType);
             // 赋值到instance 上
             instance = adaptor;
