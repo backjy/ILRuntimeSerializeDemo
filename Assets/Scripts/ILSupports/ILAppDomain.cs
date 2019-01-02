@@ -12,10 +12,6 @@ public class ILAppDomain {
     // 获取和设置ILRuntimeDomain
     static public AppDomain Instance
     {
-        set
-        {
-            _instance = value;
-        }
         get
         {
             if (_instance == null)
@@ -25,6 +21,15 @@ public class ILAppDomain {
                 InitializeDomain();
             }
             return _instance;
+        }
+    }
+
+    static public void DestroyInstance()
+    {
+        if( _instance != null)
+        {
+            _instance = null;
+            Debug.LogWarning("ILAppDomain:DestroyInstance set _instance to nil!");
         }
     }
 

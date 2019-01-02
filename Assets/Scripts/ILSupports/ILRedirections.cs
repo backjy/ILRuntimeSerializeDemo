@@ -52,6 +52,8 @@ class ILRedirections
             else
             {
                 var monoAdaptor = instance.AddComponent<MonoBehaviourAdapter.Adaptor>();
+                // 设置域
+                monoAdaptor.AppDomain = __domain;
                 // 初始化Ilruntim 脚本
                 monoAdaptor.Initialize(type as ILType);
                 //因为Unity调用这个方法时还没准备好所以这里补调一次

@@ -35,14 +35,22 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
     //为了完整实现MonoBehaviour的所有特性，这个Adapter还得扩展，这里只抛砖引玉，只实现了最常用的Awake, Start和Update
     public class Adaptor : MonoBehaviour, CrossBindingAdaptorType
     {
-        public string ilType;
+        public string ilType = null;
         private bool _initialized = false;
+        //
         private ILTypeInstance instance;
         public ILTypeInstance ILInstance
         {
             get { return instance; }
             set { instance = value; }
         }
+
+        private ILRuntime.Runtime.Enviorment.AppDomain domain;
+        public ILRuntime.Runtime.Enviorment.AppDomain AppDomain{
+            set { domain = value;}
+            get { return domain;}
+        }
+
 
         public void Initialize(ILType type)
         {
@@ -59,7 +67,9 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             if( !string.IsNullOrEmpty(ilType))
             {
                 IType type;
-                if (ILAppDomain.Instance.LoadedTypes.TryGetValue(ilType, out type))
+                if (domain == null)
+                    domain = ILAppDomain.Instance;
+                if (domain.LoadedTypes.TryGetValue(ilType, out type))
                 {
                     Initialize(type as ILType);
                 }
@@ -90,7 +100,7 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             {
                 var startMethod = instance.Type.GetMethod("Start", 0);
                 if (startMethod != null)
-                    ILAppDomain.Instance.Invoke(startMethod, instance, null);
+                    domain.Invoke(startMethod, instance, null);
             }
         }
 
@@ -98,7 +108,7 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
         {
             var destoryMethod = instance != null ? instance.Type.GetMethod("OnDestroy", 0): null;
             if (destoryMethod != null)
-                ILAppDomain.Instance.Invoke(destoryMethod, instance, null);
+                domain.Invoke(destoryMethod, instance, null);
         }
 
         IMethod enableMethod;
@@ -110,7 +120,7 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             }
             if( enableMethod != null)
             {
-                ILAppDomain.Instance.Invoke(enableMethod, instance, null);
+                domain.Invoke(enableMethod, instance, null);
             }
         }
 
@@ -123,7 +133,7 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             }
             if (enableMethod != null)
             {
-                ILAppDomain.Instance.Invoke(disableMethod, instance, null);
+                domain.Invoke(disableMethod, instance, null);
             }
         }
 
