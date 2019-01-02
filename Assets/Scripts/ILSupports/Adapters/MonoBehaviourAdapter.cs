@@ -35,7 +35,6 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
     //为了完整实现MonoBehaviour的所有特性，这个Adapter还得扩展，这里只抛砖引玉，只实现了最常用的Awake, Start和Update
     public class Adaptor : MonoBehaviour, CrossBindingAdaptorType
     {
-        public string ilType = null;
         private bool _initialized = false;
         //
         private ILTypeInstance instance;
@@ -51,24 +50,11 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             get { return domain;}
         }
 
-
-        public void Initialize(ILType type)
-        {
-            if ( _initialized == false && type != null)
-            {
-                ilType = type.FullName; _initialized = true; 
-                instance = new ILTypeInstance(type as ILType, false);
-                instance.CLRInstance = this;
-            }
-        }
-
         public void Initialize( string ilType)
         {
-            if( !string.IsNullOrEmpty(ilType))
+            if( !string.IsNullOrEmpty(ilType) && _initialized == false )
             {
                 IType type;
-                if (domain == null)
-                    domain = ILAppDomain.Instance;
                 if (domain.LoadedTypes.TryGetValue(ilType, out type))
                 {
                     Initialize(type as ILType);
@@ -76,15 +62,24 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
             }
         }
 
+        public void Initialize(ILType type)
+        {
+            if( type != null || _initialized == false)
+            {
+                _initialized = true;
+                instance = new ILTypeInstance(type as ILType, false);
+                instance.CLRInstance = this;
+            }
+        }
+
         public void Awake()
         {
-            Initialize( ilType);
             if( _initialized)
             {
                 var awakeMethod = instance != null ? instance.Type.GetMethod("Awake", 0) : null;
                 if (awakeMethod != null)
                 {
-                    ILAppDomain.Instance.Invoke(awakeMethod, instance, null);
+                    domain.Invoke(awakeMethod, instance, null);
                 }
             }
         }
@@ -92,7 +87,7 @@ public class MonoBehaviourAdapter : CrossBindingAdaptor
         void Start()
         {
             // 移除空的Behaviour
-            if( instance == null || ILAppDomain.Instance == null)
+            if( instance == null || domain == null)
             {
                 Destroy(this); Debug.Log("Remove MonoBehaviourAdapter Behaviour!");
             }

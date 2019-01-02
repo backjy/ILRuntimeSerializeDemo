@@ -56,22 +56,27 @@ public class ILBehaviourBridage : MonoBehaviour
     public void ILRuntimeInitialize()
     {
         if ( string.IsNullOrEmpty(fullType) ) return;
-        // 如果不是MonoBehaviourAdaptor  
-        if(instance == null || !(instance is MonoBehaviourAdapter.Adaptor))
+        // 创建新的MonoBehaviourAdapter
+        MonoBehaviourAdapter.Adaptor adaptor = null;
+        if ( instance == null || !(instance is MonoBehaviourAdapter.Adaptor))
         {
-            // 就要删了重新处理
-            if (instance != null) Destroy(instance);
-            // 创建新的MonoBehaviourAdapter
-            MonoBehaviourAdapter.Adaptor adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
-            //  初始化脚本类型
-            adaptor.Initialize(fullType);
-            // 赋值到instance 上
-            instance = adaptor;
-            // 序列化属性
-            ILRuntimeSerializeFields();
-            // 补充awake 调用
-            adaptor.Awake();
+            Destroy(instance);
+            adaptor = gameObject.AddComponent<MonoBehaviourAdapter.Adaptor>();
         }
+        else
+        {
+            adaptor = (MonoBehaviourAdapter.Adaptor)instance;
+        }
+        // 设置Domain
+        adaptor.AppDomain = ILAppDomain.Instance;
+        //  初始化脚本类型
+        adaptor.Initialize(fullType);
+        // 赋值到instance 上
+        instance = adaptor;
+        // 序列化属性
+        ILRuntimeSerializeFields();
+        // 补充awake 调用
+        adaptor.Awake();
     }
 
     public void ILRuntimeSerializeFields()
