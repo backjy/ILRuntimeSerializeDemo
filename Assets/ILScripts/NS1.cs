@@ -48,21 +48,28 @@ namespace TestSpace2
             Debug.Log(nsScript);
             Debug.Log(nsScript == this);
             UpdateMessage.Require(this.gameObject).update.AddAction(this.Update);
-            Debug.Log("Start...." + (prefab == this.gameObject));
+            Debug.Log("Start....");
+            Debug.Log(this.prefab);
 
             if (counter == 0)
-                GameObject.Instantiate(prefab, transform.parent);
+            {
+                this.tColor2 = Color.green; v2.x = v2.y = 1; v3.x = v3.y = v3.z = 2;
+                Instantiate(prefab, transform.parent);
+            }
             else if (counter == 1)
-                GameObject.Instantiate(this, transform.parent);
+                Instantiate(this, transform.parent);
             else if (counter == 2)
             {
-                GameObject.Instantiate(this.gameObject, transform.parent);
+                Instantiate(this.gameObject, transform.parent);
             }
-            var obj = new GameObject(ToString());
-            obj.transform.parent = transform;
-            text = obj.GetComponent<Text>();
-            Debug.Log("text:", text);
-            if( text == null) text = obj.AddComponent<Text>();
+            if( true)
+            {
+                var obj = new GameObject(ToString());
+                obj.transform.parent = transform;
+                text = obj.GetComponent<Text>();
+                Debug.Log("text:" + text);
+                if (text == null) text = obj.AddComponent<Text>();
+            }
             testValue = 0;
             StartCoroutine(cortunction());
             Debug.Log("counter:" + (++counter));
