@@ -27,6 +27,7 @@ public class UIListView : ScrollRect
             obj.transform.SetParent(transform);
             cycleParent = obj.transform;
         }
+        content.pivot = Vector2.up;
         if (horizontal)
         {
             anchorMin.y = 1;anchorMax.y = 1;
@@ -37,7 +38,7 @@ public class UIListView : ScrollRect
         if (vertical)
         {
             horizontal = false;
-            anchorMin.x = 1; anchorMax.x = 1;
+            anchorMin.y = 1; anchorMax.y = 1;
             content.anchorMin = Vector2.up; content.anchorMax = Vector2.one;
             content.offsetMin = Vector2.zero; content.offsetMax = Vector2.zero;
         }
