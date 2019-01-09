@@ -43,5 +43,5 @@ public class ILAppDomain {
     }
 
     // 是否使用ILRuntime 进行脚本运行
-    static public bool UsingILMode = true;
+    static public bool UsingILMode = false;
 }
