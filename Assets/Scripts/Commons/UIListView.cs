@@ -59,7 +59,7 @@ public class UIListView : ScrollRect
 
     private void PushRecycleCell( RectTransform cell)
     {
-        cell.SetParent(cycleParent);
+        cell.SetParent(cycleParent, false);
     }
 
     private RectTransform GetCycleCellAt( int index)
@@ -98,11 +98,11 @@ public class UIListView : ScrollRect
             if (index < 0 || index >= totalCells) break;
             fristCell = GetCycleCellAt(index);
             if (fristCell == null) break;
-            fristCell.SetParent(content);
+            fristCell.SetParent(content, false);
             fristCell.SetAsFirstSibling();
             anchorMin.y = fristCell.anchorMin.y; anchorMax.y = fristCell.anchorMax.y;
             fristCell.anchorMin = anchorMin; fristCell.anchorMax = anchorMax;
-            anchpos.x = anchpos.x - fristCell.rect.width; anchpos.y = 0;
+            anchpos.x = anchpos.x - fristCell.rect.width; anchpos.y = fristCell.anchoredPosition.y;
             fristCell.anchoredPosition = anchpos;
             iCurrentIdx = index;
         }
@@ -121,11 +121,11 @@ public class UIListView : ScrollRect
             if (index < 0 || index >= totalCells) break;
             lastCell = GetCycleCellAt(index);
             if (lastCell == null) break;
-            lastCell.SetParent(content);
+            lastCell.SetParent(content, false);
             lastCell.SetAsLastSibling();
             anchorMin.y = lastCell.anchorMin.y; anchorMax.y = lastCell.anchorMax.y;
             lastCell.anchorMin = anchorMin; lastCell.anchorMax = anchorMax;
-            anchpos.x = right; anchpos.y = 0;
+            anchpos.x = right; anchpos.y = lastCell.anchoredPosition.y;
             lastCell.anchoredPosition = anchpos;
             // state
             right = anchpos.x + lastCell.rect.width;
@@ -149,11 +149,11 @@ public class UIListView : ScrollRect
             if (index < 0 || index >= totalCells) break;
             fristCell = GetCycleCellAt(index);
             if (fristCell == null) break;
-            fristCell.SetParent(content);
+            fristCell.SetParent(content, false);
             fristCell.SetAsFirstSibling();
             anchorMin.x = fristCell.anchorMin.x; anchorMax.x = fristCell.anchorMax.x;
             fristCell.anchorMin = anchorMin; fristCell.anchorMax = anchorMax;
-            anchpos.x = 0; anchpos.y = anchpos.y + fristCell.rect.height;
+            anchpos.x = fristCell.anchoredPosition.x; anchpos.y = anchpos.y + fristCell.rect.height;
             fristCell.anchoredPosition = anchpos;
             iCurrentIdx = index;
         }
@@ -173,12 +173,12 @@ public class UIListView : ScrollRect
             if (index < 0 || index >= totalCells) break;
             lastCell = GetCycleCellAt(index);
             if (lastCell == null) break;
-            lastCell.SetParent(content);
+            lastCell.SetParent(content, false);
             lastCell.SetAsLastSibling();
             // set anchor & anchposition
             anchorMin.x = lastCell.anchorMin.x; anchorMax.x = lastCell.anchorMax.x;
             lastCell.anchorMin = anchorMin; lastCell.anchorMax = anchorMax;
-            anchpos.x = 0; anchpos.y = cellbottom;
+            anchpos.x = lastCell.anchoredPosition.x; anchpos.y = cellbottom;
             lastCell.anchoredPosition = anchpos;
             // record state values
             cellbottom = cellbottom - lastCell.rect.height;
@@ -205,19 +205,19 @@ public class UIListView : ScrollRect
             {
                 bool bMoveUp = position.y > tempContent.anchoredPosition.y;
                 if (bMoveUp) {
-                    FillBottomContent(last, position.y);
                     float fristbottom = frist.anchoredPosition.y - frist.rect.height;
                     if( frist != last && (iCurrentIdx + tempContent.childCount != totalCells) && fristbottom + position.y > 0)
                     {
                         PushRecycleCell(frist);
                         iCurrentIdx++;
                     }
+                    FillBottomContent(last, position.y);
                 } else {
-                    FillTopContent(frist, position.y);
                     if (frist != last && iCurrentIdx != 0 && last.anchoredPosition.y + position.y < viewRect.rect.height * -1)
                     {
                         PushRecycleCell(last);
                     }
+                    FillTopContent(frist, position.y);
                 }
             }
 
@@ -226,21 +226,21 @@ public class UIListView : ScrollRect
                 bool bMoveLeft = position.x < tempContent.anchoredPosition.x;
                 if( bMoveLeft)
                 {
-                    FillRightContnet(last, position.x);
                     float fristRight = frist.anchoredPosition.x + frist.rect.width;
                     if( frist != last && (iCurrentIdx + tempContent.childCount != totalCells) && fristRight + position.x < 0)
                     {
                         PushRecycleCell(frist);
                         iCurrentIdx++;
                     }
+                    FillRightContnet(last, position.x);
                 }
                 else
                 {
-                    FillLeftContent(frist, position.x);
                     if (frist != last && iCurrentIdx != 0 && last.anchoredPosition.x + position.x > viewRect.rect.width)
                     {
                         PushRecycleCell(last);
                     }
+                    FillLeftContent(frist, position.x);
                 }
             }
         }
