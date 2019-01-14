@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public delegate RectTransform InitializeCell(RectTransform transform, int idx);
@@ -10,6 +11,9 @@ public class UIListView : ScrollRect
 {
     // 循环池
     public Transform cycleParent;
+    // 是否分页 每个page cell 的宽高定
+    public bool pageEnable = false;
+    [NonSerialized]
     public InitializeCell initializeCell;
     // 当前显示的第一个索引
     private int iCurrentIdx = 0;
@@ -102,6 +106,7 @@ public class UIListView : ScrollRect
         return next;
     }
 
+    // todo: 需要修复回滚高度如果超出顶部 那么要重新调整整个窗口大小以及位置
     protected virtual void FillLeftContent( RectTransform fristCell, float positionx)
     {
         int childCount = content.childCount;
@@ -154,7 +159,7 @@ public class UIListView : ScrollRect
             content.SetWidth(contentWidth);
         }
     }
-
+    // todo: 需要修复回滚高度如果超出顶部 那么要重新调整整个窗口大小以及位置
     protected virtual void FillTopContent( RectTransform fristCell, float positiony)
     {
         int childCount = content.childCount;
@@ -266,4 +271,41 @@ public class UIListView : ScrollRect
         base.SetContentAnchoredPosition(position);
     }
 
+    public override void OnEndDrag(PointerEventData eventData)
+    {
+        base.OnEndDrag(eventData);
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
+        // 移动结束
+        if (pageEnable)
+        {
+            // clear m_velocity values
+            StopMovement();
+            // do move to
+            RectTransform frist = content.childCount > 0 ? (RectTransform)content.GetChild(0) : null;
+            if(frist != null && horizontal)
+            {
+                float halfWidth = frist.rect.width * 0.33f;
+            }
+            else if( frist != null)
+            {
+                float halfHeight = frist.rect.height * 0.33f;
+            }
+        }
+    }
+    
+    public override void OnScroll(PointerEventData data)
+    {
+        // 移动结束
+        if (!pageEnable)
+        {
+            base.OnScroll(data);
+        }
+    }
+
+    //
+    IEnumerator ScrollToPage( Vector2 position)
+    {
+        yield return null;
+    }
 }
